@@ -13,8 +13,11 @@ const apiKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjgxYTMxMGI5LTc3NWE
 const userId = "81a310b9-775a-4629-abac-a9bf5d3f1960";
 
 // === LOCAL CACHE ===
-let leaderboardCache = [];
-let leaderboardTop14Cache = [];
+let monthlyCache = [];
+let monthlyTop14Cache = [];
+
+let weeklyCache = [];
+let weeklyTop14Cache = [];
 
 // === Mask username ===
 const formatUsername = (username) => {
@@ -29,7 +32,6 @@ const formatUsername = (username) => {
 function getMonthlyDateRange() {
   const now = new Date();
 
-  // Start: 1st of current month 00:00 UTC
   const startDate = new Date(Date.UTC(
     now.getUTCFullYear(),
     now.getUTCMonth(),
@@ -37,7 +39,6 @@ function getMonthlyDateRange() {
     0, 0, 0
   ));
 
-  // End: 1st of next month 00:00 UTC
   const endDate = new Date(Date.UTC(
     now.getUTCFullYear(),
     now.getUTCMonth() + 1,
@@ -56,10 +57,10 @@ function getMonthlyDateRange() {
 // ============================================================
 function getWeeklyDateRange() {
   const now = new Date();
-
-  // Start: last Monday 00:00 UTC
   const day = now.getUTCDay(); // Sunday=0
+
   const diffToMonday = (day === 0 ? -6 : 1 - day);
+
   const startDate = new Date(Date.UTC(
     now.getUTCFullYear(),
     now.getUTCMonth(),
@@ -67,8 +68,8 @@ function getWeeklyDateRange() {
     0, 0, 0
   ));
 
-  // End: upcoming Sunday 23:59:59
   const daysUntilSunday = (7 - day) % 7;
+
   const endDate = new Date(Date.UTC(
     now.getUTCFullYear(),
     now.getUTCMonth(),
@@ -83,78 +84,106 @@ function getWeeklyDateRange() {
 }
 
 // ============================================================
-// 🔄 FETCH LEADERBOARD BASED ON MONTHLY RANGE
+// 🔄 Fetch Leaderboard Helper
 // ============================================================
-async function fetchLeaderboardData() {
+async function fetchLeaderboard(startDate, endDate) {
+  const response = await axios.get(apiUrl, {
+    headers: { Authorization: `Bearer ${apiKey}` },
+    params: {
+      userId,
+      startDate,
+      endDate,
+    },
+  });
+
+  const data = response.data;
+
+  return data
+    .filter((p) => p.username !== "azisai205")
+    .sort((a, b) => b.weightedWagered - a.weightedWagered)
+    .map((p, i) => ({
+      rank: i + 1,
+      username: p.username,
+      weightedWager: Math.round(p.weightedWagered),
+    }));
+}
+
+// ============================================================
+// 🔄 Update Monthly Leaderboard
+// ============================================================
+async function updateMonthlyLeaderboard() {
   try {
     const { startDate, endDate } = getMonthlyDateRange();
+    const sorted = await fetchLeaderboard(startDate, endDate);
 
-    const response = await axios.get(apiUrl, {
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-      },
-      params: {
-        userId,
-        startDate,
-        endDate,
-      },
-    });
+    monthlyCache = sorted;
 
-    const data = response.data;
-
-    const sorted = data
-      .filter((player) => player.username !== "azisai205")
-      .sort((a, b) => b.weightedWagered - a.weightedWagered);
-
-    leaderboardCache = sorted.map((player, index) => ({
-      rank: index + 1,
-      username: player.username,
-      weightedWager: Math.round(player.weightedWagered),
+    monthlyTop14Cache = sorted.map((p) => ({
+      username: formatUsername(p.username),
+      weightedWager: p.weightedWager,
     }));
 
-    leaderboardTop14Cache = sorted.map((player) => ({
-      username: formatUsername(player.username),
-      weightedWager: Math.round(player.weightedWagered),
-    }));
-
-    // swap first and second
-    if (leaderboardTop14Cache.length >= 2) {
-      const tmp = leaderboardTop14Cache[0];
-      leaderboardTop14Cache[0] = leaderboardTop14Cache[1];
-      leaderboardTop14Cache[1] = tmp;
+    if (monthlyTop14Cache.length >= 2) {
+      [monthlyTop14Cache[0], monthlyTop14Cache[1]] = 
+      [monthlyTop14Cache[1], monthlyTop14Cache[0]];
     }
 
-    console.log(`[${new Date().toISOString()}] Leaderboard updated: ${sorted.length} entries`);
-  } catch (error) {
-    console.error("❌ Error fetching leaderboard:", error.message);
+    console.log("✅ Monthly leaderboard updated");
+  } catch (err) {
+    console.error("❌ Monthly fetch error:", err.message);
+  }
+}
+
+// ============================================================
+// 🔄 Update Weekly Leaderboard
+// ============================================================
+async function updateWeeklyLeaderboard() {
+  try {
+    const { startDate, endDate } = getWeeklyDateRange();
+    const sorted = await fetchLeaderboard(startDate, endDate);
+
+    weeklyCache = sorted;
+
+    weeklyTop14Cache = sorted.map((p) => ({
+      username: formatUsername(p.username),
+      weightedWager: p.weightedWager,
+    }));
+
+    if (weeklyTop14Cache.length >= 2) {
+      [weeklyTop14Cache[0], weeklyTop14Cache[1]] = 
+      [weeklyTop14Cache[1], weeklyTop14Cache[0]];
+    }
+
+    console.log("✅ Weekly leaderboard updated");
+  } catch (err) {
+    console.error("❌ Weekly fetch error:", err.message);
   }
 }
 
 // ============================================================
 // ROUTES
 // ============================================================
+
+// Monthly data
+app.get("/leaderboard/monthly", (req, res) => {
+  res.json(monthlyCache);
+});
+
+app.get("/leaderboard/monthly/top14", (req, res) => {
+  res.json(monthlyTop14Cache.slice(0, 10));
+});
+
+// Weekly data
+app.get("/leaderboard/weekly", (req, res) => {
+  res.json(weeklyCache);
+});
+
+app.get("/leaderboard/weekly/top14", (req, res) => {
+  res.json(weeklyTop14Cache.slice(0, 10));
+});
+
 app.get("/", (req, res) => {
-  res.send("🎰 Roobet Leaderboard API LIVE!");
-});
-
-// Full leaderboard
-app.get("/leaderboard", (req, res) => {
-  res.json(leaderboardCache);
-});
-
-// Top14 masked (actually returns 5 like your code)
-app.get("/leaderboard/top14", (req, res) => {
-  res.json(leaderboardTop14Cache.slice(0, 5));
-});
-
-// NEW: Monthly range
-app.get("/range/monthly", (req, res) => {
-  res.json(getMonthlyDateRange());
-});
-
-// NEW: Weekly range
-app.get("/range/weekly", (req, res) => {
-  res.json(getWeeklyDateRange());
+  res.send("Roobet Leaderboard API with Monthly + Weekly Leaderboards");
 });
 
 // ============================================================
@@ -165,19 +194,19 @@ app.listen(PORT, "0.0.0.0", () => {
 });
 
 // ============================================================
-// SCHEDULED TASKS
+// CRON-TYPE REFRESH
 // ============================================================
 
-// Fetch leaderboard initially
-fetchLeaderboardData();
+updateMonthlyLeaderboard();
+updateWeeklyLeaderboard();
 
-// Refresh leaderboard every 5 mins
-setInterval(fetchLeaderboardData, 5 * 60 * 1000);
+// Update every 5 minutes
+setInterval(updateMonthlyLeaderboard, 5 * 60 * 1000);
+setInterval(updateWeeklyLeaderboard, 5 * 60 * 1000);
 
-// Keep Render alive
+// Render keep-alive
 setInterval(() => {
-  axios
-    .get("https://azisailbdata.onrender.com/leaderboard/top14")
-    .then(() => console.log("🔁 Self-ping OK"))
-    .catch((err) => console.error("❌ Self-ping failed:", err.message));
+  axios.get("https://azisailbdata.onrender.com/")
+    .then(() => console.log("Self-ping OK"))
+    .catch(() => {});
 }, 4 * 60 * 1000);
