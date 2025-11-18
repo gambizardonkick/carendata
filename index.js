@@ -112,5 +112,5 @@ setInterval(updateWeekly, 5 * 60 * 1000);
 
 // Render keep-alive
 setInterval(() => {
-  axios.get("https://azisailbdata.onrender.com").catch(() => {});
+  axios.get("https://carendata.onrender.com").catch(() => {});
 }, 4 * 60 * 1000);
