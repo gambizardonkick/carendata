@@ -9,8 +9,8 @@ app.use(cors());
 
 // === API CONFIG ===
 const apiUrl = "https://roobetconnect.com/affiliate/v2/stats";
-const apiKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjI2YWU0ODdiLTU3MDYtNGE3ZS04YTY5LTMzYThhOWM5NjMxYiIsIm5vbmNlIjoiZWI2MzYyMWUtMTMwZi00ZTE0LTlmOWMtOTY3MGNiZGFmN2RiIiwic2VydmljZSI6ImFmZmlsaWF0ZVN0YXRzIiwiaWF0IjoxNzI3MjQ2NjY1fQ.rVG_QKMcycBEnzIFiAQuixfu6K_oEkAq2Y8Gukco3b8";
-const userId = "26ae487b-5706-4a7e-8a69-33a8a9c9631b";
+const apiKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjgxYTMxMGI5LTc3NWEtNDYyOS1hYmFjLWE5YmY1ZDNmMTk2MCIsIm5vbmNlIjoiYzQ0N2NhYjMtZDJkMS00NDU1LTk3OGYtMDk0MTUyODU4Mzg1Iiwic2VydmljZSI6ImFmZmlsaWF0ZVN0YXRzIiwiaWF0IjoxNzYzNTA0MDIyfQ.eO_qZmgBEPcsBpz5tKfR08NG5v6bdiWNOlcVaRU5VFU";
+const userId = "81a310b9-775a-4629-abac-a9bf5d3f1960";
 
 // === LOCAL CACHE ===
 let leaderboardCache = [];
