@@ -8,7 +8,8 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 
 const apiUrl = "https://roobetconnect.com/affiliate/v2/stats";
-const apiKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjgxYTMxMGI5LTc3NWEtNDYyOS1hYmFjLWE5YmY1ZDNmMTk2MCIsIm5vbmNlIjoiYzQ0N2NhYjMtZDJkMS00NDU1LTk3OGYtMDk0MTUyODU4Mzg1Iiwic2VydmljZSI6ImFmZmlsaWF0ZVN0YXRzIiwiaWF0IjoxNzYzNTA0MDIyfQ.eO_qZmgBEPcsBpz5tKfR08NG5v6bdiWNOlcVaRU5VFU";
+const apiKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjRlMjEyOGM3LWQwNzMtNGU1ZC05NTE1LTZhMjJlMGEwOTlhNSIsIm5vbmNlIjoiMjZjNTVjYzEtZDEwMy00YzFjLWE2YTUtMzA1ZjRhNDI4N2UxIiwic2VydmljZSI6ImFmZmlsaWF0ZVN0YXRzIiwiaWF0IjoxNzYzNTI4OTY2fQ.eyCwrapZuEgyjvAzZu7UmYXOsRiIhhwUFkb003wPKEo
+";
 const userId = "4e2128c7-d073-4e5d-9515-6a22e0a099a5";
 
 // CACHE
