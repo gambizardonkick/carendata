@@ -9,7 +9,7 @@ app.use(cors());
 
 const apiUrl = "https://roobetconnect.com/affiliate/v2/stats";
 const apiKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjgxYTMxMGI5LTc3NWEtNDYyOS1hYmFjLWE5YmY1ZDNmMTk2MCIsIm5vbmNlIjoiYzQ0N2NhYjMtZDJkMS00NDU1LTk3OGYtMDk0MTUyODU4Mzg1Iiwic2VydmljZSI6ImFmZmlsaWF0ZVN0YXRzIiwiaWF0IjoxNzYzNTA0MDIyfQ.eO_qZmgBEPcsBpz5tKfR08NG5v6bdiWNOlcVaRU5VFU";
-const userId = "81a310b9-775a-4629-abac-a9bf5d3f1960";
+const userId = "4e2128c7-d073-4e5d-9515-6a22e0a099a5";
 
 // CACHE
 let monthlyCache = [];
